@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Network State</title>
+    <style>
+        body { margin: 0; }
+        /*
+        canvas { }
+        */
+    </style>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.159.0/build/three.module.js",
+                "three/examples/jsm/controls/OrbitControls": "https://unpkg.com/three@0.159.0/examples/jsm/controls/OrbitControls.js",
+                "three/examples/jsm/loaders/GLTFLoader": "https://unpkg.com/three@0.159.0/examples/jsm/loaders/GLTFLoader.js"
+            }
+        }
+    </script>
+    <script type="module" src="map.js"></script>
+
+    <main>
+        <!--
+        <div class="point mudac museum">
+            <img class="label" src="/images/logo-mudac.svg" alt="Logo Mudac">
+            <div class="text">Musée Cantonal de Design et d'Arts Appliqués Contemporains</div>
+        </div>
+        <div class="point mcba museum">
+            <img class="label" src="/images/logo-mcba.svg" alt="Logo MCBA">
+            <div class="text">Musée Cantonal des Beaux-Arts Lausanne</div>
+        </div>
+        -->
+
+        <!-- Info Panels  -->
+        <div class="info-panel">
+        <div class="info-panel-header">
+            <img class="close" src="/images/icn-close.svg" alt="">
+        </div>
+        <div class="info-panel-content">
+            <div class="info-panel-content-wrapper">
+            <img class="info-panel-image" src="" alt="">
+            <img class="info-panel-logo" src="" alt="">
+            <h2 class="info-panel-title"></h2>
+            <p class="info-panel-lead"></p>
+            <p class="info-panel-description"></p>
+            <table>
+                <caption>Contact</caption>
+                <tbody>
+                <tr>
+                    <th class="col-min" scope="row">Phone</th>
+                    <td class="info-panel-phone"></td>
+                </tr>
+                <tr>
+                    <th class="col-min"  scope="row">Email</th>
+                    <td class="info-panel-email"></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <a class="info-panel-website" href="" target="_blank">
+                <button>Visit website</button>
+            </a>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
