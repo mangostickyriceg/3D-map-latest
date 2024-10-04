@@ -4,6 +4,12 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader"
 import Scrolling from './Scrolling.js'
 import infos from './infoData.js'
 
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer'
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass'
+import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass'
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass'
+import { GammaCorrectionShader } from 'three/examples/jsm/shaders/GammaCorrectionShader'
+
 const config = {
     lightColor: "white",
     lightStrength: 5,
@@ -23,6 +29,32 @@ const renderer = new THREE.WebGLRenderer({ alpha: true });
 const gltfLoader = new GLTFLoader()
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
+
+// State variables
+let hoverObject = {
+  name: null
+}
+
+// Outline render effect
+const composer = new EffectComposer(renderer);
+const renderPass = new RenderPass(scene, camera);
+const gammaCorrectionPass = new ShaderPass(GammaCorrectionShader);  
+const outlinePass = new OutlinePass(new THREE.Vector2(window.innerWidth, window.innerHeight), scene, camera);
+
+composer.addPass(renderPass);
+composer.addPass(outlinePass);
+composer.addPass(gammaCorrectionPass);
+
+// Set outline color and parameters
+outlinePass.edgeStrength = 5;  // Strength of the outline
+outlinePass.edgeGlow = 0.0;    // Glow effect at the edges (usually kept low or zero)
+outlinePass.edgeThickness = 1; // Thickness of the outline
+outlinePass.pulsePeriod = 0;   // If non-zero, it creates a pulsing outline effect
+outlinePass.visibleEdgeColor.set('#ffffff');  // Color of the outline (white)
+outlinePass.hiddenEdgeColor.set('#000000');   // Color of hidden outline edges (black, or no effect)
+
+// Set the objects you want to outline
+outlinePass.selectedObjects = []
 
 // Ambient light
 const light = new THREE.AmbientLight(config.lightColor, config.lightStrength);
@@ -70,9 +102,6 @@ camera.lookAt(new THREE.Vector3(100, 0, 100))
 
 controls.update();
 
-const mcba = document.querySelector('.mcba')
-const mudac = document.querySelector('.mudac')
-
 const closeIcn = document.querySelector('.close')
 
 const infoPanel = document.querySelector('.info-panel')
@@ -98,14 +127,6 @@ const setInfoPanelData = (objId) => {
     infoPanelEmail.innerHTML = infos[objId].contact[1]
     infoPanelWebsite.href = infos[objId].website
 }
-
-// mcba.addEventListener('click', () => {
-//     setInfoPanelData("mcba")
-// });
-
-// mudac.addEventListener('click', () => {
-//     setInfoPanelData("mudac")
-// });
 
 closeIcn.addEventListener('click', () => {
     infoPanelRightStyle = infoPanelRightStyle == '0' ? '-33%' : '0'
@@ -139,28 +160,43 @@ function onClick() {
     }
 }
 
+function onMouseMove() {
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+  
+    raycaster.setFromCamera(mouse, camera);
+  
+    var intersects = raycaster.intersectObjects(scene.children, true);
+  
+    if (intersects.length > 0) {
+      let newHoverObject = intersects[0].object
+      let prevHoverObject = hoverObject
+
+      // Only update if hover object has changed
+      if (prevHoverObject.name != newHoverObject.name) {
+        // TODO Make hover over tap targets highlight associated building
+        hoverObject = newHoverObject
+
+        // Don't highlight terrain
+        if (newHoverObject.name == "Terrain") return
+
+        // Highlight new hover object
+        outlinePass.selectedObjects = [hoverObject]
+      }
+    }
+}
+
 renderer.domElement.addEventListener('click', onClick, false);
+renderer.domElement.addEventListener('mousemove', onMouseMove, false);
 
 // Animation loop
 function animate() {
     requestAnimationFrame(animate);
     
     controls.update();
-    renderer.render(scene, camera);
+    composer.render(scene, camera);
 
     scrolling.update()
-
-    // Render and position clickable interestPoints
-    for(const point of interestPoints) {
-        const screenPosition = point.position.clone()
-        screenPosition.project(camera)
-  
-        point.element.classList.add('visible')
-  
-        const translateX = screenPosition.x * window.innerWidth * 0.5
-        const translateY = - screenPosition.y * window.innerHeight * 0.5
-        point.element.style.transform = `translateX(${translateX}px) translateY(${translateY}px)`
-      }
   }
   
   animate();
