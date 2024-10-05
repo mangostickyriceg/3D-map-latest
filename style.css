@@ -17,6 +17,7 @@ body {
   font-size: 1.125rem;
   line-height: 1.5rem;
   overflow: hidden;
+  margin: 0;
 }
 
 header {
@@ -181,7 +182,6 @@ a:focus {
 }
 
 .info-panel-image {
-  margin-top: 60px;
 }
 
 .info-panel-title {
@@ -197,8 +197,16 @@ a:focus {
   padding-bottom: 2rem;
 }
 
+.info-panel-image-container {
+  height: 22em;
+  margin-top: 60px;
+}
+
 .info-panel-content img {
-  max-width: 100%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
   padding-bottom: 1.25rem;
 }
 
